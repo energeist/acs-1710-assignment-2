@@ -63,8 +63,8 @@ def secret_message():
     """Shows the user a form to collect a secret message. Sends the result via
     the POST method to keep it a secret!"""
     return """
-    <form action="/favorites_results" method="POST">
-        What is your favorite color?<br/>
+    <form action="/message_results" method="POST">
+        What is your secret message?<br/>
         <input type="text" name="message"><br/>
         <input type="submit" value="Submit!">
     </form>
@@ -72,7 +72,12 @@ def secret_message():
 
 @app.route('/message_results', methods=['POST'])
 def message_results():
+    secret_message = request.form.get('message')
     """Shows the user their message, with the letters in sorted order."""
+    return f"""
+    Here's your secret message!<br/>
+    {sort_letters(secret_message)}
+    """
     pass
 
 @app.route('/calculator')
@@ -96,8 +101,19 @@ def calculator():
 @app.route('/calculator_results')
 def calculator_results():
     """Shows the user the result of their calculation."""
-    pass
-
+    result = 'string'
+    number1 = int(request.args.get('operand1'))
+    number2 = int(request.args.get('operand2'))
+    operation_input = str(request.args.get('operation'))
+    if operation_input == 'add':
+        result = f'You chose to add {number1} and {number2}. Your result is: {number1 + number2}'        
+    elif operation_input == 'subtract':
+        result = f'You chose to subtract {number1} and {number2}. Your result is: {number1 - number2}'
+    elif operation_input == 'multiply':
+        result = f'You chose to multiply {number1} and {number2}. Your result is: {number1 * number2}'
+    elif operation_input == 'divide':
+        result = f'You chose to divide {number1} and {number2}. Your result is: {number1 / number2}'
+    return result
 
 HOROSCOPE_PERSONALITIES = {
     'aries': 'Adventurous and energetic',
@@ -122,18 +138,19 @@ def horoscope_form():
 @app.route('/horoscope_results')
 def horoscope_results():
     """Shows the user the result for their chosen horoscope."""
-
+    users_name = request.args.get('users_name')
     # TODO: Get the sign the user entered in the form, based on their birthday
-    horoscope_sign = ''
+    horoscope_sign = request.args.get('horoscope_sign')
 
     # TODO: Look up the user's personality in the HOROSCOPE_PERSONALITIES
     # dictionary based on what the user entered
-    users_personality = ''
+    users_personality = HOROSCOPE_PERSONALITIES[horoscope_sign]
 
     # TODO: Generate a random number from 1 to 99
-    lucky_number = 0
+    lucky_number = random.randint(1,99)
 
     context = {
+        'users_name': users_name,
         'horoscope_sign': horoscope_sign,
         'personality': users_personality, 
         'lucky_number': lucky_number
